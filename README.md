@@ -45,7 +45,7 @@ Make sure you have the following tools installed:
 6. Access the project in the browser using the following URL:
 
     ```
-    http://localhost:3000
+    http://localhost:4000
     ```
 
 ## Contributing
