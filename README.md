@@ -15,19 +15,19 @@ Make sure you have the following tools installed:
 1. Clone this repository to your local machine:
 
     ```
-    git clone https://github.com/yourusername/yourproject.git
+    git clone git@github.com:vinigg2/template-nestjs-api.git
     ```
 
 2. Navigate to the project directory:
 
     ```
-    cd yourproject
+    cd template-nestjs-api
     ```
 
-3. Run the following command to start the Docker environment:
+3. Copy .env.example to .env:
 
     ```
-    docker-compose up -d
+    cp .env.example .env
     ```
 
 4. Install the project dependencies with Yarn:
@@ -36,10 +36,10 @@ Make sure you have the following tools installed:
     yarn install
     ```
 
-5. You can now run the project locally:
+5. Run the following command to start the Docker environment:
 
     ```
-    yarn start
+    docker-compose up -d
     ```
 
 6. Access the project in the browser using the following URL:
