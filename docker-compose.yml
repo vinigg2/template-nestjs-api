@@ -1,0 +1,53 @@
+version: '3.8'
+services:
+  dev-host:
+    image: app-boilerplate-api:latest
+    build:
+      context: .
+      dockerfile: scripts/Dockerfile
+    command: sh -c "touch .pid && tail -f .pid"
+    ports:      
+      - 3000:3000
+      - 3002:3002
+      - 4000:4000
+      - 4566:4566
+      - 3306:3306
+  mysql:
+    image: mysql:5.7.41-debian
+    network_mode: "service:dev-host"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+  localstack:
+    image: localstack/localstack
+    network_mode: "service:dev-host"
+    environment:
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+  seeder:
+    image: app-boilerplate-api:latest
+    network_mode: "service:dev-host"
+    environment:
+      - AWS_DEFAULT_REGION=us-east-1
+      - AWS_ACCOUNT_ID=000000000000
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - AWS_ENDPOINT=http://localhost:4566
+    volumes:
+     - ./scripts:/scripts
+    entrypoint: [ "sh", "-c", "sleep 5 && /scripts/create-database.sh && /scripts/create-s3.sh"]
+    depends_on:
+      - localstack
+      - mysql
+  app:
+    image: node:16-bullseye-slim
+    network_mode: "service:dev-host"
+    env_file:
+      - .env
+    volumes:
+      - ./:/app
+      - ./tmp/s3-buckets/local-bucket:/tmp/s3-buckets/local-bucket
+    working_dir: /app
+    entrypoint: [ "sh", "-c", "sleep 15 && rm -Rf /tmp/s3-buckets/local-bucket/* && yarn start:dev"] 
+    depends_on:
+      - seeder
